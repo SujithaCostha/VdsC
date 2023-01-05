@@ -1,0 +1,367 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<windows.h>
+#include <stdbool.h>
+#include<string.h>
+#include<conio.h>
+
+
+#define PASSWORD    "XYZ"
+
+int mainExit;
+int i,j;
+
+
+//Global Variable
+int stockBalance = 0;
+
+
+//Function declaration
+void login();
+void mainMenu();
+void close();
+void createUserAccount();
+void stock();
+void delay(int);
+int load();
+int unload();
+void loadUnload();
+int updateStock();
+
+
+//Structure declaration
+struct distributors
+{
+    char name[50];
+    char itemName[50];
+    char nic[10];
+    char vehicleNumber[7];
+    int amount;
+    int vehicleCode;
+    int itemCode;
+} add,check;
+
+
+//Delay
+void delay(int j)
+{
+    int i,k;
+    for(i=0; i<j; i++)
+        k=i;
+}
+
+
+ //Exit Program
+void close()
+{
+    system("cls");
+    printf("\n\n\t\t\t\t********* Thank You! *********");
+    printf("\n\n\n\t\t\t\tIntroduction to Computer Programming");
+    printf("\n\t\t\t\tFinal Assignment - 2020");
+    printf("\n\t\t\t\tN.S.N.COSTHA\n\n\n");
+}
+
+
+//Main Menu
+void mainMenu(void)
+{
+    int choice1=0;
+errorHandlingForMainMenu:
+    system("cls");
+    system("color 3");
+
+    printf("\n\n\t\t\t*********************************** ");
+    printf("\n\t\t\t           XYZ DISTRIBUTORS      ");
+    printf("\n\t\t\t*********************************** ");
+    printf("\n\n\t\t\t-MAIN MENU-\n ");
+
+    printf("\n\t\t1.Create User Account ");
+    printf("\n\t\t2.Work Time ");
+    printf("\n\t\t3.Add Item To stock ");
+
+    printf("\n\n\t\t4.Log Out");
+
+    printf("\n\n\t\t Enter your choice : ");
+    scanf("%d",&choice1);
+
+    switch(choice1)
+    {
+    case 1:
+         createUserAccount();
+        break;
+    case 2:
+        loadUnload();
+        break;
+    case 3:
+        stock();
+        break;
+    case 4:
+        close();
+        break;
+    default:
+        printf("\t\t Error input!");
+        printf("\n\t Loading Main Menu");
+        for(i=0; i<=6; i++)
+        {
+            delay(100000000);
+            printf(". ");
+        }
+        system("cls");
+        goto errorHandlingForMainMenu;
+        break;
+    }
+}
+
+
+//Main
+int main()
+{
+   login();
+    return 0;
+}
+
+
+//CREATE USER ACCOUNT
+void createUserAccount()
+{
+    FILE *create;
+    create=fopen("recordfile.txt","a+");
+    do{
+        system("cls");
+        printf("\t\t\t***********************************\n");
+        printf("\t\t\t        CREATE SALES Account        \n");
+        printf("\t\t\t*********************************** \n\n");
+
+        printf("Enter Salesman Name  : ");
+        scanf("%s",add.name);
+        printf("Enter Vehicle Number : ");
+        scanf("%s",add.vehicleNumber);
+        printf("Enter nic Number     : ");
+        scanf("%s",add.nic);
+        printf("Enter  Vehicle Code  : ");
+        scanf("%d",&add.vehicleCode);
+        add.amount = 0;
+
+        fprintf(create, "%s \t %s \t %s \t %d \t %d \n", add.name, add.vehicleNumber,add.nic,add.vehicleCode, add.amount);
+        printf("\n\tAccount Created successfully! ");
+        printf("\n \n Have another record? (Y/N) : ");
+
+      }while(toupper(getche())=='Y');
+      fclose(create);
+
+      printf("\n\tEnter '1' to go Main Menu:");
+      scanf("%d",&j);
+
+      if (j==1)
+      {
+        mainMenu();
+      }
+      else{
+        exit(0);
+      }
+
+}
+
+
+//ADD ITEMS
+void stock()
+{
+    int adding = 0;
+    system("cls");
+        printf("\t\t\t***********************************\n");
+        printf("\t\t\t         ADD ITEM      \n");
+        printf("\t\t\t*********************************** \n\n");
+
+        printf("\n\n\t\tCurrent Stock Balance is %d Items", stockBalance);
+        printf("\n\t\tQuantity : ");
+        scanf("%d", &adding);
+        updateStock(adding);
+        printf("\n\n\t\tNew Stock Balance is %d Items", stockBalance);
+
+        printf("\n\n\t\t Press any key to continue : ");
+        char c;
+        c = getchar();
+        c = fgetc(stdin);
+        mainMenu();
+
+}
+
+
+//LOAD
+int load(int value)
+{
+  int amount;
+  printf("\t\t\tEnter the loading amount : ");
+  scanf("%d",&amount);
+
+  updateStock(-amount);
+  value+=amount;
+
+
+  return value;
+}
+
+//UNLOAD
+int unload(int value)
+{
+  int amount;
+  printf("\t\t\tEnter the unloading amount : ");
+  scanf("%d",&amount);
+
+  updateStock(amount);
+  value-=amount;
+
+
+  return value;
+
+}
+
+
+//LOADIND & UNLOADING
+void loadUnload()
+{
+HandlingPart:
+  system("color 3");
+  system("cls");
+  int choice2=0 , menu=0, amount=0;
+
+  FILE *old,*temp;
+  old=fopen("recordfile.txt","r");
+  temp=fopen("temp.txt","w");
+
+  printf(" \n \n \t \t Enter Your Vehicle Code : ");
+  scanf("%d",&check.vehicleCode);
+
+  while(fscanf(old,"%s %s %s %d %d",add.name,add.vehicleNumber,add.nic,&add.vehicleCode,&add.amount)!=EOF)
+ {
+
+   if (add.vehicleCode==check.vehicleCode)
+     {
+
+      printf("\nVehicle Number   : %s ",add.vehicleNumber);
+      printf("\nSalesman Name    : %s ",add.name);
+      printf("\nNIC Number       : %s ",add.nic);
+      printf("\nCurrent Sale     : %d ",add.amount);
+      printf("\n\(amount of item\)");
+
+      printf("\n\t\t\t Press 1 to loading ");
+      printf("\n\t\t\t Press 2 to unloading ");
+
+      printf("\n\n\t\t\tEnter Your Choice : ");
+      scanf("%d",&choice2);
+     if (choice2==1)
+       {
+         amount=add.amount;
+         add.amount=load(amount);
+         fprintf(temp,"%s %s %s %d %d",add.name,add.vehicleNumber,add.nic,add.vehicleCode,add.amount);
+         printf("\n\n\t\tRecord added Successfuly");
+       }
+     else
+        if (choice2== 2)
+         {
+           amount=add.amount;
+           add.amount=unload(amount);
+           fprintf(temp,"%s %s %s %d %d",add.name,add.vehicleNumber,add.nic,add.vehicleCode,add.amount);
+           printf("\n\n\t\tRecord added Successfuly");
+         }
+        else
+          {
+            printf("\nEnter Valid Input");
+            fprintf(temp,"%s %s %s %d %d",add.name,add.vehicleNumber,add.nic,add.vehicleCode,add.amount);
+
+          }
+      }
+    else
+      {
+        printf("\n");
+       fprintf(temp,"%s %s %s %d %d",add.name,add.vehicleNumber,add.nic,add.vehicleCode,add.amount);
+
+      }
+ }
+   fclose(old);
+   fclose(temp);
+   remove("recordfile.txt");
+   rename("temp.txt","recordfile.txt");
+errorMenuHandling:
+   printf("\n\n\t\t Enter 1 to add another record ");
+   printf("\n\t\t Enter 2 to go main menu ");
+   printf("\n\n\t\tEnter Your Choice : ");
+   scanf("%d",&menu);
+   system("cls");
+  switch (menu)
+  {
+    case 1 :
+       goto HandlingPart;
+    case 2 :
+       mainMenu();
+       break;
+   default :
+       printf(" \n Invalid Input \n ");
+       goto errorMenuHandling;
+   }
+}
+
+
+//STOCK UPDATES
+int updateStock(int val)
+{
+    FILE *stock;
+    stock = fopen("Stock.txt", "w+");
+    fscanf(stock,"%d", &stockBalance);
+    stockBalance+=val;
+    fprintf(stock, "%d", stockBalance);
+    fclose(stock);
+    return stockBalance;
+}
+
+
+//LOGIN
+void login()
+{
+    system("color 2");
+    char pass[10];
+    int i=0;
+    printf("\n\n\t\t\t*********************************** ");
+    printf("\n\t\t\t           XYZ DISTRIBUTORS      ");
+    printf("\n\t\t\t*********************************** ");
+    printf("\n\n\t\tUSER LOGIN PASSWORD : ");
+    scanf("%s",pass);
+
+    if (strcmp(pass,PASSWORD) == 0)
+    {
+        printf("\n\nPassword Match !\n\nThis 'CSC 107 2.0 Introduction to Computer Programming Final Assignment – 2020' is developed by N.S.N.COSTHA!\n\n\n\tLOADING");
+        for(i=0; i<=6; i++)
+        {
+            delay(100000000);
+            printf(". ");
+        }
+        system("cls");
+        mainMenu();
+    }
+    else
+    {
+        printf("\n\nWrong password!!\a\a\a");
+loginTry:
+        printf("\nEnter 1 to try again OR 0 to exit:");
+        scanf("%d",&mainExit);
+        if (mainExit==1)
+        {
+            system("cls");
+            main();
+        }
+
+        else if (mainExit==0)
+        {
+            system("cls");
+            close();
+        }
+        else
+        {
+            printf("\nInvalid!");
+            delay(1000000000);
+            system("cls");
+            goto loginTry;
+        }
+    }
+}
+
