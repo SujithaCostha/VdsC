@@ -1,0 +1,662 @@
+/*
+                                    CSC 107 2.0 Introduction to Computer Programming
+                                            Final Assignment - 2019
+                                              K.M.G.R.L.WIJESINGHE
+                                                   18/AS-P/260
+*/
+/*
+printf("     _      ______    ______     ______                _      ");
+printf("    / \    ||__ _\\  / /____|   ||__ _\\  __ _  _ __  | | __  ");
+printf("   / _ \   ||____//  | |        ||____// / _` || '_ `\| |/ /  ");
+printf("  / ___ \  ||__ _\\  | |____    ||__ _\\| (_| || | | ||   <   ");
+printf(" /_/   \_\ ||____//  \______|   ||____// \__,_||_| |_||_|\_\  ");
+*/
+#include<stdio.h>
+#include<stdlib.h>
+#include<windows.h>
+#include <stdbool.h>
+#include<string.h>
+#include<conio.h>
+
+//Global Variables
+const int maxCustomers = 1000;
+const int NORMAL = 500;
+const int EIGHTEEN_PLUS = 1000;
+const int RANKAKULU = 1500;
+const int WANITHA = 1000;
+
+int generateAccNumber = 1;
+int mainExit;
+int i,j;
+
+//Function declaration
+void login();
+void mainMenu();
+float interest(float,float,float);
+void close();
+void createNewAccount();
+void displayCustomerDetails();
+void transact();
+//void depositAmount();
+//void withdrawAmount();
+void displayAccountDetails();
+void delay(int);
+
+//Structure declaration
+struct bank
+{
+    char name[50];
+    int accNumber;
+    char nic[10];
+    int accType;
+    float amount;
+} add,check,transaction;
+//Find Interest
+float interest(float time,float amount,float rate)
+{
+    float SI;
+    SI=(rate*time*amount)/100.0;
+    return (SI);
+}
+//Delay
+void delay(int j)
+{
+    int i,k;
+    for(i=0; i<j; i++)
+        k=i;
+}
+//Create New Account
+void createNewAccount()
+{
+    //int choice;
+    float positiveAmount;
+    FILE *create;
+
+    create=fopen("record.dat","a+");
+
+errorHandling:
+    system("cls");
+
+    printf("\t\t\t***********************************\n");
+    printf("\t\t\t         CREATE NEW ACCOUNT        \n");
+    printf("\t\t\t*********************************** \n\n");
+
+    //printf("\nEnter the account number : ");
+    //scanf("%d",&check.accNumber);
+
+    while(fscanf(create,"%s %d %s %d %f",add.name,&add.accNumber,add.nic,&add.accType,&add.amount)!=EOF)
+    {
+        /*if (check.accNumber == add.accNumber)
+        {
+            printf("Account no. already in use!");
+            delay(100000000000);
+            goto errorHandling;
+        }*/
+        if (generateAccNumber < maxCustomers)
+        {
+            if (generateAccNumber == add.accNumber)
+            {
+                printf("Account no. already in use!\n\n");
+                generateAccNumber++;
+                for(i=0; i<=6; i++)
+                {
+                    delay(100000000);
+                    printf(". ");
+                }
+                goto errorHandling;
+            }
+        }
+        else
+        {
+            printf("Maximume customer accounts has reached limit. ");
+            for(i=0; i<=6; i++)
+            {
+                delay(100000000);
+                printf(". ");
+            }
+            close();
+        }
+    }
+    printf("\nAccount Number : %d",generateAccNumber);
+    add.accNumber = generateAccNumber;
+
+duplicateAccountsHandling:
+    printf("\nType of account : ");
+    printf("\n\t1.Normal");
+    printf("\n\t2.Eighteen Plus");
+    printf("\n\t3.Rankakulu");
+    printf("\n\t4.Wanitha");
+    printf("\n\n\tEnter your choice :");
+    scanf(" %d",&check.accType);
+
+    printf("Enter the NIC Number : ");
+    scanf("%s",check.nic);
+
+    while(fscanf(create,"%s %d %s %d %f",add.name,&add.accNumber,add.nic,&add.accType,&add.amount)!=EOF)
+    {
+        if (check.nic == add.nic)
+        {
+            if (check.accType == add.accType)
+            {
+                printf("This type of account is already in use for your NIC !");
+                delay(1000000000);
+                goto duplicateAccountsHandling;
+            }
+        }
+    }
+
+    add.accType = check.accType;
+    //add.nic = check.nic;
+    strcpy(add.nic,check.nic);
+
+    printf("Enter the name :");
+    scanf("%s",add.name);
+
+    printf("Enter the amount to deposit : Rs.");
+    scanf("%f",&positiveAmount);
+//checking positive values
+    if (positiveAmount > 0)
+        add.amount = positiveAmount;
+    else
+        add.amount = (-1)*(positiveAmount);
+
+
+    fprintf(create,"%s %d %s %d %f",add.name,add.accNumber,add.nic,add.accType,add.amount);
+    fclose(create);
+
+    printf("\nAccount created successfully!");
+
+createNewAccountInvalid:
+    printf("\n\n\n\t\tEnter 1 to go to the main menu OR 0 to exit:");
+    scanf("%d",&mainExit);
+
+    system("cls");
+    if (mainExit == 1)
+        mainMenu();
+    else if(mainExit == 0)
+        close();
+    else
+    {
+        printf("\nInvalid!\a");
+        goto createNewAccountInvalid;
+    }
+}
+//Display Customer Details
+void displayCustomerDetails()
+{
+    FILE *view;
+    view=fopen("record.dat","r");
+    int test=0;
+
+errorHandlingForAccountDetails:
+    system("cls");
+
+    printf("\nDisplay which type of sorted customer details");
+    printf("\n\nType of account : ");
+    printf("\n\t1.Normal");
+    printf("\n\t2.Eighteen Plus");
+    printf("\n\t3.Rankakulu");
+    printf("\n\t4.Wanitha");
+    printf("\n\n\tEnter your choice :");
+    scanf(" %d",&check.accType);
+
+    system("cls");
+    test=1;
+    printf("\t\t\t***********************************\n");
+    printf("\t\t\t         ACCOUNT DETAILS           \n");
+    printf("\t\t\t*********************************** \n\n");
+
+    printf("_________________________________________________________________________");
+    printf("\n|  ACC. NO. | ACC. TYPE | \tNAME\t|  \tNIC\t  |  \tBALANCE  |\n");
+    printf("-------------------------------------------------------------------------");
+
+    while(fscanf(view,"%s %d %s %d %f",add.name,&add.accNumber,add.nic,&add.accType,&add.amount)!=EOF)
+    {
+        if (check.accType == add.accType)
+        {
+            printf("\n|  %4d     |     %1d     |    %s \t|   %s   |  Rs. %.2f |",add.accNumber,add.accType,add.name,add.nic,add.amount);
+            test++;
+        }
+
+        else if(check.accType>4)
+        {
+            system("cls");
+            printf("\nInvalid!\n");
+            for(i=0; i<=6; i++)
+            {
+                delay(100000000);
+                printf(". ");
+            }
+            goto errorHandlingForAccountDetails;
+        }
+    }
+    printf("\n-------------------------------------------------------------------------");
+
+    fclose(view);
+    if (test == 1)
+    {
+        system("cls");
+        printf("\nRecord not found!!\n");
+
+    }
+displayCustomerDetailsInvalid:
+    printf("\n\nEnter 0 to try again,1 to return to main menu OR 2 to exit: ");
+    scanf("%d",&mainExit);
+    system("cls");
+    if (mainExit==2)
+        close();
+    else if (mainExit==1)
+        mainMenu();
+    else if(mainExit==0)
+        displayCustomerDetails();
+    else
+        {
+            system("cls");
+            printf("\nInvalid!\a");
+            goto displayCustomerDetailsInvalid;
+        }
+    //}
+
+    /*else if (test==1)
+    {
+        system("cls");
+        printf("\nRecord not found!!\n");
+        printf("\nEnter 1 to go to the main menu OR 0 to exit:");
+        scanf("%d",&mainExit);
+    }
+    if (mainExit==1)
+    {
+        system("cls");
+        mainMenu();
+    }
+    else
+    {
+        system("cls");
+        close();
+    }*/
+}
+//For Transaction
+void transact()
+{
+    int choice,test=0,positiveVal;
+    float positiveDeposit,positiveWithdraw;
+    FILE *old,*newrec;
+    old=fopen("record.dat","r");
+    newrec=fopen("new.dat","w");
+
+    /*
+    FILE *trans;
+    trans = fopen("record.dat","r+");
+    */
+
+    printf("\nEnter the account no. of the customer:");
+    scanf("%d",&transaction.accNumber);
+    while (fscanf(old,"%s %d %s %d %f",add.name,&add.accNumber,add.nic,&add.accType,&add.amount)!= EOF)
+    {
+        if(add.accNumber==transaction.accNumber)
+        {
+            test=1;
+
+            printf("\n\nDo you want to \n\t(1).Deposit Money\n\t\t  OR\n\t(2)Withdraw Money?\n\n\t\tEnter your choice : ");
+            scanf("%d",&positiveVal);
+            //checking positive values
+            if (positiveVal > 0)
+                choice = positiveVal;
+            else
+                choice = (-1)*positiveVal;
+
+            //For Deposit Money
+            if (choice == 1)
+            {
+                printf("\n\n\t\t\t***********************************\n");
+                printf("\t\t\t         DEPOSIT MONEY               \n");
+                printf("\t\t\t*********************************** \n\n");
+
+                printf("Enter the amount you want to deposit: Rs. ");
+                scanf("%f",&positiveDeposit);
+                //checking positive values
+                if (positiveDeposit > 0)
+                    transaction.amount = positiveDeposit;
+                else
+                    transaction.amount = (-1)*positiveDeposit;
+
+                add.amount+=transaction.amount;
+                fprintf(newrec,"%s %d %s %d %f",add.name,add.accNumber,add.nic,add.accType,add.amount);
+                printf("\n\nDeposited successfully!");
+            }
+            //For Withdraw Money
+            else if (choice == 2)
+            {
+                printf("\n\n\t\t\t***********************************\n");
+                printf("\t\t\t         WITHDRAW MONEY               \n");
+                printf("\t\t\t*********************************** \n\n");
+
+                printf("Enter the amount you want to withdraw : Rs. ");
+                scanf("%f",&positiveWithdraw);
+                //checking positive values
+                if (positiveWithdraw > 0)
+                    transaction.amount = positiveWithdraw;
+                else
+                    transaction.amount = -(positiveWithdraw);
+
+                if(add.accType== 1)
+                {
+                    if ((add.amount-NORMAL) >= transaction.amount )
+                    {
+                        add.amount-=transaction.amount;
+                        fprintf(newrec,"%s %d %s %d %f",add.name,add.accNumber,add.nic,add.accType,add.amount);
+                        printf("\n\nWithdrawn successfully!");
+                    }
+                    else
+                    {
+                        printf("Low Balance...");
+                        fprintf(newrec,"%s %d %s %d %f",add.name,add.accNumber,add.nic,add.accType,add.amount);
+                    }
+                }
+                else if(add.accType== 2)
+                {
+                    if ((add.amount-EIGHTEEN_PLUS) >= transaction.amount)
+                    {
+                        add.amount-=transaction.amount;
+                        fprintf(newrec,"%s %d %s %d %f",add.name,add.accNumber,add.nic,add.accType,add.amount);
+                        printf("\n\nWithdrawn successfully!");
+                    }
+                    else
+                    {
+                        printf("Low Balance...");
+                        fprintf(newrec,"%s %d %s %d %f",add.name,add.accNumber,add.nic,add.accType,add.amount);
+                    }
+                }
+                else if(add.accType== 3)
+                {
+                    if ((add.amount-RANKAKULU) >= transaction.amount)
+                    {
+                        add.amount-=transaction.amount;
+                        fprintf(newrec,"%s %d %s %d %f",add.name,add.accNumber,add.nic,add.accType,add.amount);
+                        printf("\n\nWithdrawn successfully!");
+                    }
+                    else
+                    {
+                        printf("Low Balance...");
+                        fprintf(newrec,"%s %d %s %d %f",add.name,add.accNumber,add.nic,add.accType,add.amount);
+                    }
+                }
+                else if(add.accType== 4)
+                {
+                    if ((add.amount-WANITHA) >= transaction.amount)
+                    {
+                        add.amount-=transaction.amount;
+                        printf(newrec,"%s %d %s %d %f",add.name,add.accNumber,add.nic,add.accType,add.amount);
+                        printf("\n\nWithdrawn successfully!");
+                    }
+                    else
+                    {
+                        printf("Low Balance...");
+                        fprintf(newrec,"%s %d %s %d %f",add.name,add.accNumber,add.nic,add.accType,add.amount);
+                    }
+                }
+                //fprintf(newrec,"%s %d %s %s %f",add.name,add.accNumber,add.nic,add.accType,add.amount);
+            }
+            else
+            {
+                printf("\nEnter Valid Input");
+                fprintf(newrec,"%s %d %s %d %f",add.name,add.accNumber,add.nic,add.accType,add.amount);
+            }
+        }
+        else
+            fprintf(newrec,"%s %d %s %d %f",add.name,add.accNumber,add.nic,add.accType,add.amount);
+    }
+    //fclose(trans);
+    fclose(old);
+    fclose(newrec);
+    remove("record.dat");
+    rename("new.dat","record.dat");
+
+    if(test!=1)
+    {
+        printf("\n\nRecord not found!!");
+transactInvalid:
+        printf("\n\n\nEnter 0 to try again,1 to return to main menu OR 2 to exit:");
+        scanf("%d",&mainExit);
+        system("cls");
+        if (mainExit==0)
+            transact();
+        else if (mainExit==1)
+            mainMenu();
+        else if (mainExit==2)
+            close();
+        else
+        {
+            printf("\nInvalid!");
+            goto transactInvalid;
+        }
+    }
+    else
+    {
+        printf("\nEnter 1 to go to the main menu OR 0 to exit:");
+        scanf("%d",&mainExit);
+        system("cls");
+        if (mainExit==1)
+            mainMenu();
+        else
+            close();
+    }
+}
+//Display Account Details
+void displayAccountDetails(void)
+{
+    FILE *create;
+
+    int test=0;
+    //int choice;
+    float time,rate,intrst;
+
+    create = fopen("record.dat","r");
+
+    printf("Enter the account number:");
+    scanf("%d",&check.accNumber);
+
+    while (fscanf(create,"%s %d %s %d %f",add.name,&add.accNumber,add.nic,&add.accType,&add.amount)!=EOF)
+    {
+        if(add.accNumber == check.accNumber)
+        {
+            system("cls");
+            test=1;
+
+            printf("\t\t\t***********************************\n");
+            printf("\t\t\t         YOUR ACCOUNT DETAILS      \n");
+            printf("\t\t\t***********************************\n\n");
+
+            printf("\nAccount NO. : %d",add.accNumber);
+            printf("\nName : %s",add.name);
+            printf("\nNIC No : %s",add.nic);
+            printf("\nType Of Account : %d",add.accType);
+            printf("\nAccount Balance : Rs. %.2f",add.amount);
+
+            if(add.accType== 1)
+            {
+                time=(1.0/12.0);
+                rate=4;
+                intrst=interest(time,add.amount,rate);
+                printf("\nMonthly Interest For Current Balance : Rs.%.2f",intrst);
+            }
+            else if(add.accType== 2)
+            {
+                time=(1.0/12.0);
+                rate=4.5;
+                intrst=interest(time,add.amount,rate);
+                printf("\nMonthly Interest For Current Balance : Rs.%.2f",intrst);
+            }
+            else if(add.accType== 3)
+            {
+                time=(1.0/12.0);
+                rate=5;
+                intrst=interest(time,add.amount,rate);
+                printf("\nMonthly Interest For Current Balance : Rs.%.2f",intrst);
+            }
+            else if(add.accType== 4)
+            {
+                time=(1.0/12.0);
+                rate=4.7;
+                intrst=interest(time,add.amount,rate);
+                printf("\nMonthly Interest For Current Balance : Rs.%.2f",intrst);
+            }
+
+        }
+    } 
+    fclose(create);
+    if(test!=1)
+    {
+        system("cls");
+        printf("\nRecord not found!!\a\a\a");
+displayAccountDetailsinvalid:
+        printf("\nEnter 0 to try again,1 to return to main menu OR 2 to exit:");
+        scanf("%d",&mainExit);
+        system("cls");
+        if (mainExit==1)
+            mainMenu();
+        else if (mainExit==2)
+            close();
+        else if(mainExit==0)
+            displayAccountDetails();
+        else
+        {
+            system("cls");
+            printf("\nInvalid!\a");
+            goto displayAccountDetailsinvalid;
+        }
+    }
+    else
+    {
+        printf("\nEnter 1 to go to the main menu OR 0 to exit:");
+        scanf("%d",&mainExit);
+    }
+    if (mainExit==1)
+    {
+        system("cls");
+        mainMenu();
+    }
+    else
+    {
+        system("cls");
+        close();
+    }
+}
+//Exit Program
+void close()
+{
+    printf("\n\n\t\t********* Thank You! *********\n\n\n\tCSC 107 2.0 Introduction to Computer Programming\n\t\tFinal Assignment - 2019\n\t\t K.M.G.R.L.WIJESINGHE\n\t\t  18/AS-P/260\n\n\n");
+}
+//Main Menu
+void mainMenu(void)
+{
+    int choice,positiveVal;
+errorHandlingForMainMenu:
+    system("cls");
+    system("color 3");
+
+    printf("\n\n\t\t\t***********************************");
+    printf("\n\t\t\t      WELCOME TO THE ABC BANK       ");
+    printf("\n\t\t\t***********************************");
+    printf("\n\n\t\t\t-MAIN MENU-\n");
+
+    printf("\n\t\t1.Create New Account");
+    printf("\n\t\t2.For Transaction");
+    printf("\n\t\t3.Account Details");
+    printf("\n\t\t4.Customer Details");
+    printf("\n\n\t\t5.Log Out");
+
+    printf("\n\n\t\t Enter your choice : ");
+    scanf("%d",&positiveVal);
+    //checking positive values
+    if (positiveVal > 0)
+        choice = positiveVal;
+    else
+        choice = -(positiveVal);
+
+    system("cls");
+    switch(choice)
+    {
+    case 1:
+        createNewAccount();
+        break;
+    case 2:
+        transact();
+        break;
+    case 3:
+        displayAccountDetails();
+        break;
+    case 4:
+        displayCustomerDetails();
+        break;
+    case 5:
+        close();
+        break;
+    default:
+        printf("\t\t Error input!");
+        printf("\n\t Loading Main Menu");
+        for(i=0; i<=6; i++)
+        {
+            delay(100000000);
+            printf(". ");
+        }
+        system("cls");
+        goto errorHandlingForMainMenu;
+        break;
+    }
+}
+//Office Use
+void main()
+{
+    login();
+    return 0;
+}
+//log in
+void login()
+{
+    system("color 2");
+    char pass[10],password[10]="USJP";
+    int i=0;
+    printf("\n\t\t\t***********************************");
+    printf("\n\t\t\t           ABC BANK                ");
+    printf("\n\t\t\t***********************************");
+    printf("\n\n\t\tUSER LOGIN PASSWORD : ");
+    scanf("%s",pass);
+
+    if (strcmp(pass,password) == 0)
+    {
+        printf("\n\nPassword Match !\n\nThis 'CSC 107 2.0 Introduction to Computer Programming Final Assignment – 2019' is developed by K.M.G.R.L.WIJESINGHE!\n\n\n\tLOADING");
+        for(i=0; i<=6; i++)
+        {
+            delay(100000000);
+            printf(". ");
+        }
+        system("cls");
+        mainMenu();
+    }
+    else
+    {
+        printf("\n\nWrong password!!\a\a\a");
+loginTry:
+        printf("\nEnter 1 to try again OR 0 to exit:");
+        scanf("%d",&mainExit);
+        if (mainExit==1)
+        {
+            system("cls");
+            main();
+        }
+
+        else if (mainExit==0)
+        {
+            system("cls");
+            close();
+        }
+        else
+        {
+            printf("\nInvalid!");
+            delay(1000000000);
+            system("cls");
+            goto loginTry;
+        }
+    }
+}
